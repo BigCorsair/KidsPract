@@ -11,6 +11,17 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="text/babel" src="script.js"></script>
+    <p id="startup-status" class="startup-status">Загрузка приложения...</p>
+    <script>
+      window.__kidsPractAppMounted = false;
+      window.setTimeout(() => {
+        if (window.__kidsPractAppMounted) return;
+        const status = document.getElementById("startup-status");
+        if (!status) return;
+        status.textContent =
+          "Приложение не загрузилось. Проверьте интернет и откройте через локальный сервер: python3 -m http.server 8000";
+      }, 4000);
+    </script>
+    <script type="text/babel" data-presets="react" src="script.js"></script>
   </body>
 </html>
