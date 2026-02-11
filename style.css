@@ -27,6 +27,15 @@ body {
     linear-gradient(180deg, var(--bg1), var(--bg2));
 }
 
+.startup-status {
+  max-width: 900px;
+  margin: 0 auto 1rem;
+  padding: 0 1rem;
+  color: #33426d;
+  text-align: center;
+  font-weight: 700;
+}
+
 .page-header {
   max-width: 980px;
   margin: 0 auto;
