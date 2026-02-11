@@ -125,7 +125,7 @@ if (window.React && window.ReactDOM) {
   const b = rand(5, 15);
   const c = rand(1, 9);
   return createQuestion(`${a} + ${b} - ${c} = ?`, a + b - c);
-}
+},
 
       () => {
         const a = rand(8, 80);
