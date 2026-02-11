@@ -52,6 +52,81 @@ if (window.React && window.ReactDOM) {
 
   function grade2(mode) {
     const set = [
+
+      // 1️⃣ Сравнить и найти разницу
+() => {
+  const a = rand(20, 99);
+  const b = rand(20, 99);
+  return createQuestion(`How much more is ${a} than ${b}?`, a - b);
+},
+
+// 2️⃣ Сложение через десяток (bridge to 10)
+() => {
+  const a = rand(8, 9);
+  const b = rand(11, 19);
+  return createQuestion(`${a} + ${b} = ?`, a + b);
+},
+
+// 3️⃣ Missing addend (IXL стиль)
+() => {
+  const a = rand(10, 40);
+  const b = rand(10, 40);
+  return createQuestion(`${a} + ? = ${a + b}`, b, { placeholder: "Missing number" });
+},
+
+// 4️⃣ Десятки + единицы
+() => {
+  const tens = rand(2, 8) * 10;
+  const ones = rand(1, 9);
+  return createQuestion(`${tens} + ${ones} = ?`, tens + ones);
+},
+
+// 5️⃣ Number line thinking
+() => {
+  const start = rand(30, 70);
+  const jump = rand(2, 9);
+  return createQuestion(`Start at ${start} and jump forward ${jump}. Where do you land?`, start + jump);
+},
+
+// 6️⃣ True or False (логика)
+() => {
+  const a = rand(10, 50);
+  const b = rand(10, 50);
+  const shown = a + b + rand(-5, 5);
+  const answer = (a + b === shown) ? "true" : "false";
+  return createQuestion(`${a} + ${b} = ${shown}. True or false?`, answer, { placeholder: "true / false" });
+},
+
+// 7️⃣ Word problem — coins (очень Grade 2)
+() => {
+  const quarters = rand(1, 4);
+  return createQuestion(
+    `You have ${quarters} quarters. How many cents is that?`,
+    quarters * 25
+  );
+},
+
+// 8️⃣ Skip counting
+() => {
+  const start = rand(2, 9) * 5;
+  return createQuestion(`Count by 5s: ${start}, ${start + 5}, ${start + 10}, ?`, start + 15);
+},
+
+// 9️⃣ Even/Odd с большим числом
+() => {
+  const n = rand(20, 120);
+  const answer = n % 2 === 0 ? "even" : "odd";
+  return createQuestion(`${n} is even or odd?`, answer, { placeholder: "even / odd" });
+},
+
+// 🔟 Two-step thinking (легкий уровень)
+() => {
+  const a = rand(10, 30);
+  const b = rand(5, 15);
+  const c = rand(1, 9);
+  return createQuestion(`${a} + ${b} - ${c} = ?`, a + b - c);
+}
+
       () => {
         const a = rand(8, 80);
         const b = rand(5, 20);
