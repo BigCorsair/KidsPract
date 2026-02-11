@@ -1,9 +1,3 @@
-diff --git a/README.md b/README.md
-index 3b30f63e9f594400c7f756de73590284f3892912..21e7ff5fb1202b6d673395af219bffcb4193f3a7 100644
---- a/README.md
-+++ b/README.md
-@@ -1 +1,31 @@
--This is new small app for my kids
 +# Kids Math Trainer
 +
 +A single-page React math trainer for US elementary students (Grade 2–5).
