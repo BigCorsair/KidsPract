@@ -596,5 +596,14 @@ if (window.React && window.ReactDOM) {
   const rootEl = document.getElementById("root");
   if (rootEl) {
     ReactDOM.createRoot(rootEl).render(<App />);
+    window.__kidsPractAppMounted = true;
+    const startupStatus = document.getElementById("startup-status");
+    if (startupStatus) startupStatus.remove();
+  }
+} else {
+  const startupStatus = document.getElementById("startup-status");
+  if (startupStatus) {
+    startupStatus.textContent =
+      "React не загрузился. Проверьте интернет и перезагрузите страницу.";
   }
 }
