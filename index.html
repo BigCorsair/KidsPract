@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Math Practice для детей</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <h1>Math Practice для детей</h1>
+      <p>Выберите класс, чтобы увидеть задания, примеры и упражнения.</p>
+    </header>
+
+    <main class="container">
+      <section class="grade-switcher" aria-label="Переключатель классов">
+        <label for="grade-select">Класс:</label>
+        <select id="grade-select"></select>
+      </section>
+
+      <section class="grade-info" aria-live="polite">
+        <h2 id="grade-title"></h2>
+        <p id="grade-description"></p>
+      </section>
+
+      <section class="content-grid">
+        <article class="card">
+          <h3>Примеры</h3>
+          <ul id="examples-list"></ul>
+        </article>
+
+        <article class="card">
+          <h3>Задачки</h3>
+          <ul id="tasks-list"></ul>
+        </article>
+
+        <article class="card">
+          <h3>Упражнения</h3>
+          <ul id="exercises-list"></ul>
+        </article>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
