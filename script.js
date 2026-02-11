@@ -1,75 +1,112 @@
-const { useEffect, useMemo, useRef, useState } = React;
+const { useState, useEffect } = React;
 
-const GRADE_LABELS = [2, 3, 4, 5];
+const rand = (min,max)=>Math.floor(Math.random()*(max-min+1))+min;
 
-const MODE_OPTIONS = [
-  { id: "practice", label: "Practice Mode" },
-  { id: "speed", label: "Speed Mode (30s)" },
-  { id: "mixed", label: "Mixed Challenge" }
-];
-
-const praiseMessages = ["Great Job!", "Awesome!", "You got it!", "Nice work!"];
-
-const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-const pick = (arr) => arr[rand(0, arr.length - 1)];
-
-const normalizeAnswer = (value) => String(value).trim().toLowerCase();
-
-function createQuestion(prompt, answer, opts = {}) {
-  return {
-    id: `${Date.now()}-${Math.random()}`,
-    prompt,
-    answer: normalizeAnswer(answer),
-    type: opts.type || "input",
-    options: opts.options || [],
-    placeholder: opts.placeholder || "Type your answer",
-    inputMode: opts.inputMode || "numeric"
-  };
-}
-
-function withChoices(question) {
-  const correct = Number(question.answer);
-  const spread = [correct - rand(1, 5), correct + rand(1, 6), correct + rand(7, 12)]
-    .filter((n) => Number.isFinite(n) && n >= 0);
-
-  const options = [...new Set([correct, ...spread])].slice(0, 4);
-  while (options.length < 4) options.push(correct + rand(2, 15));
-  options.sort(() => Math.random() - 0.5);
-
-  return { ...question, type: "mcq", options: options.map(String) };
-}
-
-function playTone(freq, duration, type = "sine", volume = 0.03) {
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if (!AudioCtx) return;
-
-  const ctx = playTone.ctx || (playTone.ctx = new AudioCtx());
-  if (ctx.state === "suspended") ctx.resume();
-
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  osc.type = type;
-  osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-  gain.gain.setValueAtTime(volume, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
-
+function playTone(freq,duration){
+  const ctx=new (window.AudioContext||window.webkitAudioContext)();
+  const osc=ctx.createOscillator();
+  const gain=ctx.createGain();
+  osc.frequency.value=freq;
+  gain.gain.value=0.03;
   osc.connect(gain);
   gain.connect(ctx.destination);
-
   osc.start();
-  osc.stop(ctx.currentTime + duration);
+  setTimeout(()=>osc.stop(),duration*1000);
 }
 
-const sounds = {
-  click: () => playTone(520, 0.05, "triangle", 0.02),
-  correct: () => {
-    playTone(700, 0.08);
-    setTimeout(() => playTone(940, 0.12), 80);
-  },
-  wrong: () => {
-    playTone(220, 0.12, "sawtooth");
-    setTimeout(() => playTone(170, 0.12, "sawtooth"), 90);
-  }
+const sounds={
+ click:()=>playTone(500,.05),
+ correct:()=>{playTone(700,.1);setTimeout(()=>playTone(900,.1),80)},
+ wrong:()=>playTone(200,.15)
 };
+
+function generateProblem(grade){
+ if(grade===2){
+   let a=rand(1,50),b=rand(1,40);
+   return {q:`${a}+${b}=?`,a:String(a+b)};
+ }
+ if(grade===3){
+   let a=rand(2,9),b=rand(2,9);
+   return {q:`${a}×${b}=?`,a:String(a*b)};
+ }
+ if(grade===4){
+   let a=rand(20,90),b=rand(10,40);
+   return {q:`${a}×${b}=?`,a:String(a*b)};
+ }
+ let a=rand(2,8),b=rand(3,9),c=rand(2,5);
+ return {q:`${a}+${b}×${c}=?`,a:String(a+b*c)};
+}
+
+function App(){
+
+ const [screen,setScreen]=useState("home");
+ const [grade,setGrade]=useState(2);
+ const [problem,setProblem]=useState(generateProblem(2));
+ const [answer,setAnswer]=useState("");
+ const [score,setScore]=useState(0);
+ const [time,setTime]=useState(30);
+ const [mode,setMode]=useState("practice");
+
+ useEffect(()=>{
+   if(mode!=="speed"||screen!=="play")return;
+   if(time<=0)return;
+
+   const t=setTimeout(()=>setTime(time-1),1000);
+   return ()=>clearTimeout(t);
+ },[time,mode,screen]);
+
+ const check=(value)=>{
+   if(value===problem.a){
+     sounds.correct();
+     setScore(s=>s+1);
+     setTimeout(()=>setProblem(generateProblem(grade)),500);
+     setAnswer("");
+   }else{
+     sounds.wrong();
+   }
+ };
+
+ if(screen==="home"){
+   return(
+    <div className="screen">
+     <h1>Kids Math Trainer</h1>
+     {[2,3,4,5].map(g=>(
+       <button key={g} className="big-btn"
+         onClick={()=>{sounds.click();setGrade(g);setScreen("mode");}}>
+         Grade {g}
+       </button>
+     ))}
+    </div>
+   );
+ }
+
+ if(screen==="mode"){
+   return(
+    <div className="screen">
+      <h1>Grade {grade}</h1>
+      <button className="big-btn" onClick={()=>{setMode("practice");setScreen("play");setScore(0);}}>
+        Practice Mode
+      </button>
+      <button className="big-btn" onClick={()=>{setMode("speed");setScreen("play");setTime(30);setScore(0);}}>
+        Speed 30s
+      </button>
+      <button className="ghost-btn" onClick={()=>setScreen("home")}>Back</button>
+    </div>
+   );
+ }
+
+ return(
+  <div className="screen">
+    <h2>Score: {score}</h2>
+    {mode==="speed" && <h3>Time: {time}</h3>}
+    <div className="card">
+      <h1>{problem.q}</h1>
+      <input value={answer} onChange={e=>setAnswer(e.target.value)}/>
+      <button className="big-btn" onClick={()=>check(answer)}>Check</button>
+    </div>
+    <button className="ghost-btn" onClick={()=>setScreen("mode")}>Change Mode</button>
+  </div>
+ );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
